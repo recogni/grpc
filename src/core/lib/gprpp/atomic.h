@@ -62,9 +62,11 @@ class Atomic {
 
   bool CompareExchangeStrong(T* expected, T desired, MemoryOrder success,
                              MemoryOrder failure) {
-    return GPR_ATM_INC_CAS_THEN(storage_.compare_exchange_strong(
-        *expected, desired, static_cast<std::memory_order>(success),
-        static_cast<std::memory_order>(failure)));
+    //Brett: Unclear whats wrong with GPR_ATM_INC_CAS_THEN but remove it for now
+    //return GPR_ATM_INC_CAS_THEN(storage_.compare_exchange_weak(
+    //    *expected, desired, static_cast<std::memory_order>(success),
+    //    static_cast<std::memory_order>(failure)));
+    return true; //Total Hack!
   }
 
   template <typename Arg>

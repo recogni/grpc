@@ -164,7 +164,7 @@ set(gRPC_ABSL_USED_TARGETS
   absl_meta
 )
 
-set(gRPC_USE_PROTO_LITE OFF CACHE BOOL "Use the protobuf-lite library")
+set(gRPC_USE_PROTO_LITE ON CACHE BOOL "Use the protobuf-lite library")
 
 if(UNIX)
   if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
@@ -3720,7 +3720,7 @@ endif()
 
 if(gRPC_BUILD_CODEGEN)
 
-if(gRPC_INSTALL)
+if(gRPC_INSTALL AND NOT gRPC_USE_PROTO_LITE)
   install(TARGETS grpcpp_channelz EXPORT gRPCTargets
     RUNTIME DESTINATION ${gRPC_INSTALL_BINDIR}
     LIBRARY DESTINATION ${gRPC_INSTALL_LIBDIR}

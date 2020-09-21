@@ -35,9 +35,11 @@ case "$1" in
     clean)
         # Keyword 'clean' removes (causing a rebuild) of the 
         # host arch build tools, libs etc.
+
+        echo "Cleaning $TMP_TOOLCHAIN and cmake/${RISCV_BUILD_AREA}"
+        echo
         rm -rf $TMP_TOOLCHAIN
 
-        # Do I always need to do this?
         rm -rf cmake/${RISCV_BUILD_AREA}/
         ;;
     *)
@@ -46,26 +48,36 @@ case "$1" in
 esac
 
 # Verify toolchain
+
+#This script makes a copy of the existing RISCV toolchain ($RISCV_TOOLCHAIN)
+# in $TMP_TOOLCHAIN) since this script adds significantly to it.
+# This also lets us trivialy remove the entire temp toolchain for cleaning.
+
 if [ ! -x ${RISCV_TOOLCHAIN}/bin/riscv64-unknown-elf-gcc ]; then
     echo "RISCV_TOOLCHAIN should point to a previously created cross compile environment."
     echo "See https://github.com/recogni/scorpio-fw for how to create one."
     exit
+else
+    echo "Found valid riscv toolchain in place at ${RISCV_TOOLCHAIN}"
 fi
 
 cd "$(dirname "$0")/../../.."
 
 #
-# Create & install x86 toolchains
+# Create & install: 
+#   x86 toolchains
+#   x86 grpc & libs 
 #
 if [ ! -d ${TMP_TOOLCHAIN}/riscv ]
 then
-    $ONE_STEP && echo  "1.0: Build local host version of grpc/Hit Return" && read ans
+    echo  "1.0: Install/update local cmake version if needed"
+    $ONE_STEP && echo  "Hit Return" && read ans
 
     #
     # Install CMake 3.16 only if needed
     #
     if [ -x /usr/bin/cmake ] && /usr/bin/cmake --version 2>/dev/null | grep -q 3.16.1; then
-        echo "Have cmake, skip install"
+        echo "cmake already up to date"
     else
         apt-get update && apt-get install -y wget
         wget -q -O cmake-linux.sh https://github.com/Kitware/CMake/releases/download/v3.16.1/cmake-3.16.1-Linux-x86_64.sh
@@ -75,13 +87,14 @@ then
         # Assume we only need to check libssl-dev the first time cmake is installed.
         # Install openssl (to use instead of boringssl)
         apt-get update && apt-get install -y libssl-dev
-
     fi
 
     # Build and install gRPC including libraries for the host architecture.
     # We do this because we need to be able to run protoc and grpc_cpp_plugin
     # while cross-compiling.
-    $ONE_STEP && echo  "1.5: Host compile protoc and grpc_plugin/Hit Return" && read ans
+    # These binaries get installed in to /usr/local/bin.
+    echo  "1.5: Build host versions of protoc and grpc_plugin"
+    $ONE_STEP && echo  "Hit Return" && read ans
     mkdir -p "cmake/build"
     pushd "cmake/build"
     cmake \
@@ -92,19 +105,22 @@ then
       ../..
     make -j4 install
     popd
+else
+    echo "Host versions of protoc and grpc_plugin already in place"
 fi  
 
 
 # Download toolchain if needed.
+echo "3.0: Downloading riscv cross compilersi if needed"
+$ONE_STEP && echo "Hit Return" && read ans
 if [ ! -d ${TMP_TOOLCHAIN}/riscv ]
 then  
-    $ONE_STEP && echo "2.0: Downloading risc cross compilers/Hit Return" && read ans
     mkdir -p ${TMP_TOOLCHAIN}
     pushd ${TMP_TOOLCHAIN}
     mkdir riscv
     cp -r ${RISCV_TOOLCHAIN}/* riscv
 else
-    $ONE_STEP && echo "2.0: Skip Downloading risc cross compilers/Hit Return" && read ans
+    #echo "RISCV cross compilers up to date"
     pushd ${TMP_TOOLCHAIN}
 fi
 
@@ -142,7 +158,8 @@ popd
 
 # This build will use the host architecture copies of protoc and
 # grpc_cpp_plugin that we built earlier.
-$ONE_STEP && echo "3.0: Do riscv builds/Hit Return" && read ans
+echo "4.0: Create Makefile for Riscv builds"
+$ONE_STEP && echo "Hit Return" && read ans
 mkdir -p "cmake/${RISCV_BUILD_AREA}"
 pushd "cmake/${RISCV_BUILD_AREA}"
 cmake -DCMAKE_TOOLCHAIN_FILE=/tmp/riscv_root/toolchain.cmake \
@@ -152,14 +169,16 @@ cmake -DCMAKE_TOOLCHAIN_FILE=/tmp/riscv_root/toolchain.cmake \
 
 #This is the heavy ifting....build all needed libraries,
 # executables, etc.
-$ONE_STEP && echo "3.1: Install riscv builds/Hit Return" && read ans
+echo "5: Build riscv libs and executables"
+$ONE_STEP && echo "Hit Return" && read ans
 make -j4 install
 popd
 
 # Build helloworld example for raspberry pi.
 # As above, it will find and use protoc and grpc_cpp_plugin
 # for the host architecture.
-$ONE_STEP && echo "4.0: Build riscv version of example app/Hit Return" && read ans
+echo "6.0: Build riscv version of example app"
+$ONE_STEP && echo "Hit Return" && read ans
 mkdir -p "examples/cpp/helloworld/cmake/${RISCV_BUILD_AREA}"
 pushd "examples/cpp/helloworld/cmake/${RISCV_BUILD_AREA}"
 cmake -DCMAKE_TOOLCHAIN_FILE=/tmp/riscv_root/toolchain.cmake \

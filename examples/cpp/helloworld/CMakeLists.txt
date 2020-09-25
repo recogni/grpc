@@ -116,7 +116,7 @@ else()
   find_package(gRPC CONFIG REQUIRED)
   message(STATUS "Using gRPC ${gRPC_VERSION}")
 
-  set(_GRPC_GRPCPP gRPC::grpc++)
+  set(_GRPC_GRPCPP gRPC::grpc++_unsecure)
   if(CMAKE_CROSSCOMPILING)
     find_program(_GRPC_CPP_PLUGIN_EXECUTABLE grpc_cpp_plugin)
   else()

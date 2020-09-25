@@ -24,7 +24,8 @@ RISCV_TOOLCHAIN=/opt/scorpio-fw-gcc/
 ONE_STEP=false   # set to true or false
 
 #These are private, no need to mess with.
-RISCV_BUILD_AREA=riscv_build        # RISCV libraries and binaries
+RISCV_BUILD_AREA=cmake/riscv_build        # RISCV libraries and binaries
+HOST_BUILD_AREA=cmake/build               # Host libraries and binaries
 TMP_TOOLCHAIN=/tmp/riscv_root       # x86 toolchain, libs, etc
 
 # Bail on errors
@@ -36,11 +37,12 @@ case "$1" in
         # Keyword 'clean' removes (causing a rebuild) of the 
         # host arch build tools, libs etc.
 
-        echo "Cleaning $TMP_TOOLCHAIN and cmake/${RISCV_BUILD_AREA}"
+        echo "Cleaning $TMP_TOOLCHAIN and ${RISCV_BUILD_AREA}"
         echo
         rm -rf $TMP_TOOLCHAIN
-
-        rm -rf cmake/${RISCV_BUILD_AREA}/
+        rm -rf ${RISCV_BUILD_AREA}/
+        rm -rf ${HOST_BUILD_AREA}/
+        rm -rf examples/cpp/helloworld/${RISCV_BUILD_AREA}
         ;;
     *)
         echo "Leave $TMP_TOOLCHAIN in place"
@@ -95,8 +97,8 @@ then
     # These binaries get installed in to /usr/local/bin.
     echo  "1.5: Build host versions of protoc and grpc_plugin"
     $ONE_STEP && echo  "Hit Return" && read ans
-    mkdir -p "cmake/build"
-    pushd "cmake/build"
+    mkdir -p ${HOST_BUILD_AREA}
+    pushd ${HOST_BUILD_AREA}
     cmake \
       -DCMAKE_BUILD_TYPE=Release \
       -DgRPC_INSTALL=ON \
@@ -160,8 +162,8 @@ popd
 # grpc_cpp_plugin that we built earlier.
 echo "4.0: Create Makefile for Riscv builds"
 $ONE_STEP && echo "Hit Return" && read ans
-mkdir -p "cmake/${RISCV_BUILD_AREA}"
-pushd "cmake/${RISCV_BUILD_AREA}"
+mkdir -p "${RISCV_BUILD_AREA}"
+pushd "${RISCV_BUILD_AREA}"
 cmake -DCMAKE_TOOLCHAIN_FILE=/tmp/riscv_root/toolchain.cmake \
       -DCMAKE_BUILD_TYPE=Release \
       -DCMAKE_INSTALL_PREFIX=/tmp/riscv_root/grpc_install \
@@ -179,8 +181,8 @@ popd
 # for the host architecture.
 echo "6.0: Build riscv version of example app"
 $ONE_STEP && echo "Hit Return" && read ans
-mkdir -p "examples/cpp/helloworld/cmake/${RISCV_BUILD_AREA}"
-pushd "examples/cpp/helloworld/cmake/${RISCV_BUILD_AREA}"
+mkdir -p "examples/cpp/helloworld/${RISCV_BUILD_AREA}"
+pushd "examples/cpp/helloworld/${RISCV_BUILD_AREA}"
 cmake -DCMAKE_TOOLCHAIN_FILE=/tmp/riscv_root/toolchain.cmake \
       -DCMAKE_BUILD_TYPE=Release \
       -DProtobuf_DIR=/tmp/riscv_root/stage/lib/cmake/protobuf \

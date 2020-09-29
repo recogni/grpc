@@ -26,23 +26,30 @@ ONE_STEP=false   # set to true or false
 #These are private, no need to mess with.
 RISCV_BUILD_AREA=cmake/riscv_build        # RISCV libraries and binaries
 HOST_BUILD_AREA=cmake/build               # Host libraries and binaries
-TMP_TOOLCHAIN=/tmp/riscv_root       # x86 toolchain, libs, etc
+TMP_TOOLCHAIN=/tmp/riscv_root             # x86 based crosscompile toolchain,
+                                          # as well as riscv crosscompiled support tools
 
 # Bail on errors
 set -e
 
 # Add options here
 case "$1" in
-    clean)
+    clean*)
         # Keyword 'clean' removes (causing a rebuild) of the 
         # host arch build tools, libs etc.
 
         echo "Cleaning $TMP_TOOLCHAIN and ${RISCV_BUILD_AREA}"
-        echo
         rm -rf $TMP_TOOLCHAIN
         rm -rf ${RISCV_BUILD_AREA}/
         rm -rf ${HOST_BUILD_AREA}/
         rm -rf examples/cpp/helloworld/${RISCV_BUILD_AREA}
+        case "$1" in
+            cleanonly)
+                echo "Clean & exit"
+                exit
+                ;;
+        esac
+
         ;;
     *)
         echo "Leave $TMP_TOOLCHAIN in place"
@@ -141,10 +148,10 @@ fi
 #        -Wl,-L$ENV{TOOLCHAIN_PATH}/aarch64le/lib \
 #        -Wl,-L$ENV{TOOLCHAIN_PATH}/aarch64le/usr/lib")
 
-cat > toolchain.cmake <<'EOT'
+echo "set(devel_root ${TMP_TOOLCHAIN})" > toolchain.cmake
+cat >> toolchain.cmake <<'EOT'
 SET(CMAKE_SYSTEM_NAME Linux)
 SET(CMAKE_SYSTEM_PROCESSOR xxriscv64)
-set(devel_root /tmp/riscv_root)
 set(CMAKE_STAGING_PREFIX ${devel_root}/stage)
 set(tool_root ${devel_root}/riscv)
 set(CMAKE_SYSROOT ${tool_root}/sysroot)
@@ -164,9 +171,9 @@ echo "4.0: Create Makefile for Riscv builds"
 $ONE_STEP && echo "Hit Return" && read ans
 mkdir -p "${RISCV_BUILD_AREA}"
 pushd "${RISCV_BUILD_AREA}"
-cmake -DCMAKE_TOOLCHAIN_FILE=/tmp/riscv_root/toolchain.cmake \
+cmake -DCMAKE_TOOLCHAIN_FILE=${TMP_TOOLCHAIN}/toolchain.cmake \
       -DCMAKE_BUILD_TYPE=Release \
-      -DCMAKE_INSTALL_PREFIX=/tmp/riscv_root/grpc_install \
+      -DCMAKE_INSTALL_PREFIX=${TMP_TOOLCHAIN}/grpc_install \
       ../..
 
 #This is the heavy ifting....build all needed libraries,
@@ -183,10 +190,10 @@ echo "6.0: Build riscv version of example app"
 $ONE_STEP && echo "Hit Return" && read ans
 mkdir -p "examples/cpp/helloworld/${RISCV_BUILD_AREA}"
 pushd "examples/cpp/helloworld/${RISCV_BUILD_AREA}"
-cmake -DCMAKE_TOOLCHAIN_FILE=/tmp/riscv_root/toolchain.cmake \
+cmake -DCMAKE_TOOLCHAIN_FILE=${TMP_TOOLCHAIN}/toolchain.cmake \
       -DCMAKE_BUILD_TYPE=Release \
-      -DProtobuf_DIR=/tmp/riscv_root/stage/lib/cmake/protobuf \
-      -DgRPC_DIR=/tmp/riscv_root/stage/lib/cmake/grpc \
+      -DProtobuf_DIR=${TMP_TOOLCHAIN}/stage/lib/cmake/protobuf \
+      -DgRPC_DIR=${TMP_TOOLCHAIN}/stage/lib/cmake/grpc \
       ../..
 make
 popd

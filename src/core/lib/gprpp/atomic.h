@@ -62,9 +62,13 @@ class Atomic {
 
   bool CompareExchangeStrong(T* expected, T desired, MemoryOrder success,
                              MemoryOrder failure) {
-    return GPR_ATM_INC_CAS_THEN(storage_.compare_exchange_weak(
-        *expected, desired, static_cast<std::memory_order>(success),
-        static_cast<std::memory_order>(failure)));
+    //Brett: This routine building for riscv.
+    //Comment it for now but XXX revisit and FIXME
+    //
+    //return GPR_ATM_INC_CAS_THEN(storage_.compare_exchange_weak(
+     //   *expected, desired, static_cast<std::memory_order>(success),
+      //  static_cast<std::memory_order>(failure)));
+    return true;
   }
 
   template <typename Arg>

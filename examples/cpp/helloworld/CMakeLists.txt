@@ -153,11 +153,11 @@ foreach(_target
   add_executable(${_target} "${_target}.cc"
     ${hw_proto_srcs}
     ${hw_grpc_srcs})
- find_library(LIBATOMIC atomic) 
+# find_library(LIBATOMIC atomic) 
  target_link_libraries(${_target}
     ${_REFLECTION}
     ${_GRPC_GRPCPP}
     ${_PROTOBUF_LIBPROTOBUF}
-	${LIBATOMIC}
+#	${LIBATOMIC}
 )
 endforeach()

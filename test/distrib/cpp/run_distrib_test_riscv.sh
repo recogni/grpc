@@ -41,7 +41,7 @@ case "$1" in
         echo "Cleaning $TMP_TOOLCHAIN and ${RISCV_BUILD_AREA}"
         rm -rf $TMP_TOOLCHAIN
         rm -rf ${RISCV_BUILD_AREA}/
-        rm -rf ${HOST_BUILD_AREA}/
+        sudo rm -rf ${HOST_BUILD_AREA}/
         rm -rf examples/cpp/helloworld/${RISCV_BUILD_AREA}
         case "$1" in
             cleanonly)
@@ -112,7 +112,7 @@ then
       -DgRPC_BUILD_TESTS=OFF \
       -DgRPC_SSL_PROVIDER=package \
       ../..
-    make -j4 install
+    sudo make -j4 install
     popd
 else
     echo "Host versions of protoc and grpc_plugin already in place"

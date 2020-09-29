@@ -21,7 +21,7 @@
 RISCV_TOOLCHAIN=/opt/scorpio-fw-gcc/
 
 #Ask user to hit return at each major step,
-ONE_STEP=false   # set to true or false
+ONE_STEP=true   # set to true or false
 
 #These are private, no need to mess with.
 RISCV_BUILD_AREA=cmake/riscv_build        # RISCV libraries and binaries
@@ -151,7 +151,7 @@ fi
 echo "set(devel_root ${TMP_TOOLCHAIN})" > toolchain.cmake
 cat >> toolchain.cmake <<'EOT'
 SET(CMAKE_SYSTEM_NAME Linux)
-SET(CMAKE_SYSTEM_PROCESSOR xxriscv64)
+SET(CMAKE_SYSTEM_PROCESSOR riscv64)
 set(CMAKE_STAGING_PREFIX ${devel_root}/stage)
 set(tool_root ${devel_root}/riscv)
 set(CMAKE_SYSROOT ${tool_root}/sysroot)

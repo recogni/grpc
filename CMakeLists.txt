@@ -78,9 +78,6 @@ set_property(CACHE gRPC_CARES_PROVIDER PROPERTY STRINGS "module" "package")
 set(gRPC_RE2_PROVIDER "module" CACHE STRING "Provider of re2 library")
 set_property(CACHE gRPC_RE2_PROVIDER PROPERTY STRINGS "module" "package")
 
-set(gRPC_SSL_PROVIDER "package" CACHE STRING "Provider of ssl library")
-set_property(CACHE gRPC_SSL_PROVIDER PROPERTY STRINGS "module" "package")
-
 set(gRPC_PROTOBUF_PROVIDER "module" CACHE STRING "Provider of protobuf library")
 set_property(CACHE gRPC_PROTOBUF_PROVIDER PROPERTY STRINGS "module" "package")
 
@@ -450,7 +447,6 @@ target_include_directories(address_sorting
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${_gRPC_ADDRESS_SORTING_INCLUDE_DIR}
     ${_gRPC_RE2_INCLUDE_DIR}
-    ${_gRPC_SSL_INCLUDE_DIR}
     ${_gRPC_UPB_GENERATED_DIR}
     ${_gRPC_UPB_GRPC_GENERATED_DIR}
     ${_gRPC_UPB_INCLUDE_DIR}
@@ -526,7 +522,6 @@ target_include_directories(gpr
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${_gRPC_ADDRESS_SORTING_INCLUDE_DIR}
     ${_gRPC_RE2_INCLUDE_DIR}
-    ${_gRPC_SSL_INCLUDE_DIR}
     ${_gRPC_UPB_GENERATED_DIR}
     ${_gRPC_UPB_GRPC_GENERATED_DIR}
     ${_gRPC_UPB_INCLUDE_DIR}
@@ -618,7 +613,6 @@ target_include_directories(grpc_csharp_ext
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${_gRPC_ADDRESS_SORTING_INCLUDE_DIR}
     ${_gRPC_RE2_INCLUDE_DIR}
-    ${_gRPC_SSL_INCLUDE_DIR}
     ${_gRPC_UPB_GENERATED_DIR}
     ${_gRPC_UPB_GRPC_GENERATED_DIR}
     ${_gRPC_UPB_INCLUDE_DIR}
@@ -1000,7 +994,6 @@ target_include_directories(grpc_unsecure
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${_gRPC_ADDRESS_SORTING_INCLUDE_DIR}
     ${_gRPC_RE2_INCLUDE_DIR}
-    ${_gRPC_SSL_INCLUDE_DIR}
     ${_gRPC_UPB_GENERATED_DIR}
     ${_gRPC_UPB_GRPC_GENERATED_DIR}
     ${_gRPC_UPB_INCLUDE_DIR}
@@ -1079,7 +1072,6 @@ target_include_directories(grpc++_error_details
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${_gRPC_ADDRESS_SORTING_INCLUDE_DIR}
     ${_gRPC_RE2_INCLUDE_DIR}
-    ${_gRPC_SSL_INCLUDE_DIR}
     ${_gRPC_UPB_GENERATED_DIR}
     ${_gRPC_UPB_GRPC_GENERATED_DIR}
     ${_gRPC_UPB_INCLUDE_DIR}
@@ -1141,7 +1133,6 @@ target_include_directories(grpc++_reflection
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${_gRPC_ADDRESS_SORTING_INCLUDE_DIR}
     ${_gRPC_RE2_INCLUDE_DIR}
-    ${_gRPC_SSL_INCLUDE_DIR}
     ${_gRPC_UPB_GENERATED_DIR}
     ${_gRPC_UPB_GRPC_GENERATED_DIR}
     ${_gRPC_UPB_INCLUDE_DIR}
@@ -1237,7 +1228,6 @@ target_include_directories(grpc++_unsecure
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${_gRPC_ADDRESS_SORTING_INCLUDE_DIR}
     ${_gRPC_RE2_INCLUDE_DIR}
-    ${_gRPC_SSL_INCLUDE_DIR}
     ${_gRPC_UPB_GENERATED_DIR}
     ${_gRPC_UPB_GRPC_GENERATED_DIR}
     ${_gRPC_UPB_INCLUDE_DIR}
@@ -1492,7 +1482,6 @@ target_include_directories(grpc_plugin_support
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${_gRPC_ADDRESS_SORTING_INCLUDE_DIR}
     ${_gRPC_RE2_INCLUDE_DIR}
-    ${_gRPC_SSL_INCLUDE_DIR}
     ${_gRPC_UPB_GENERATED_DIR}
     ${_gRPC_UPB_GRPC_GENERATED_DIR}
     ${_gRPC_UPB_INCLUDE_DIR}
@@ -1550,7 +1539,6 @@ target_include_directories(grpcpp_channelz
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${_gRPC_ADDRESS_SORTING_INCLUDE_DIR}
     ${_gRPC_RE2_INCLUDE_DIR}
-    ${_gRPC_SSL_INCLUDE_DIR}
     ${_gRPC_UPB_GENERATED_DIR}
     ${_gRPC_UPB_GRPC_GENERATED_DIR}
     ${_gRPC_UPB_INCLUDE_DIR}
@@ -1611,7 +1599,6 @@ target_include_directories(upb
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${_gRPC_ADDRESS_SORTING_INCLUDE_DIR}
     ${_gRPC_RE2_INCLUDE_DIR}
-    ${_gRPC_SSL_INCLUDE_DIR}
     ${_gRPC_UPB_GENERATED_DIR}
     ${_gRPC_UPB_GRPC_GENERATED_DIR}
     ${_gRPC_UPB_INCLUDE_DIR}
@@ -1643,7 +1630,6 @@ target_include_directories(check_epollexclusive
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${_gRPC_ADDRESS_SORTING_INCLUDE_DIR}
     ${_gRPC_RE2_INCLUDE_DIR}
-    ${_gRPC_SSL_INCLUDE_DIR}
     ${_gRPC_UPB_GENERATED_DIR}
     ${_gRPC_UPB_GRPC_GENERATED_DIR}
     ${_gRPC_UPB_INCLUDE_DIR}
@@ -1666,7 +1652,6 @@ target_include_directories(gen_hpack_tables
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${_gRPC_ADDRESS_SORTING_INCLUDE_DIR}
     ${_gRPC_RE2_INCLUDE_DIR}
-    ${_gRPC_SSL_INCLUDE_DIR}
     ${_gRPC_UPB_GENERATED_DIR}
     ${_gRPC_UPB_GRPC_GENERATED_DIR}
     ${_gRPC_UPB_INCLUDE_DIR}
@@ -1693,7 +1678,6 @@ target_include_directories(gen_legal_metadata_characters
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${_gRPC_ADDRESS_SORTING_INCLUDE_DIR}
     ${_gRPC_RE2_INCLUDE_DIR}
-    ${_gRPC_SSL_INCLUDE_DIR}
     ${_gRPC_UPB_GENERATED_DIR}
     ${_gRPC_UPB_GRPC_GENERATED_DIR}
     ${_gRPC_UPB_INCLUDE_DIR}
@@ -1718,7 +1702,6 @@ target_include_directories(gen_percent_encoding_tables
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${_gRPC_ADDRESS_SORTING_INCLUDE_DIR}
     ${_gRPC_RE2_INCLUDE_DIR}
-    ${_gRPC_SSL_INCLUDE_DIR}
     ${_gRPC_UPB_GENERATED_DIR}
     ${_gRPC_UPB_GRPC_GENERATED_DIR}
     ${_gRPC_UPB_INCLUDE_DIR}
@@ -1744,7 +1727,6 @@ target_include_directories(grpc_cpp_plugin
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${_gRPC_ADDRESS_SORTING_INCLUDE_DIR}
     ${_gRPC_RE2_INCLUDE_DIR}
-    ${_gRPC_SSL_INCLUDE_DIR}
     ${_gRPC_UPB_GENERATED_DIR}
     ${_gRPC_UPB_GRPC_GENERATED_DIR}
     ${_gRPC_UPB_INCLUDE_DIR}
@@ -1826,15 +1808,6 @@ generate_pkgconfig(
   ""
   "gpr.pc")
 
-# grpc .pc file
-#generate_pkgconfig(
-#  "gRPC"
-#  "high performance general RPC framework"
-#  "${gRPC_CORE_VERSION}"
-#  "gpr openssl"
-#  "-lgrpc -laddress_sorting -lre2 -lupb -lcares -lz -labsl_raw_hash_set -labsl_hashtablez_sampler -labsl_exponential_biased -labsl_hash -labsl_bad_variant_access -labsl_city -labsl_status -labsl_cord -labsl_bad_optional_access -labsl_str_format_internal -labsl_synchronization -labsl_graphcycles_internal -labsl_symbolize -labsl_demangle_internal -labsl_stacktrace -labsl_debugging_internal -labsl_malloc_internal -labsl_time -labsl_time_zone -labsl_civil_time -labsl_strings -labsl_strings_internal -labsl_throw_delegate -labsl_int128 -labsl_base -labsl_spinlock_wait -labsl_raw_logging_internal -labsl_log_severity -labsl_dynamic_annotations"
-#  ""
-#  "grpc.pc")
 
 # grpc_unsecure .pc file
 generate_pkgconfig(
@@ -1845,16 +1818,6 @@ generate_pkgconfig(
   "-lgrpc_unsecure -labsl_status -labsl_cord -labsl_bad_optional_access -labsl_str_format_internal -labsl_synchronization -labsl_graphcycles_internal -labsl_symbolize -labsl_demangle_internal -labsl_stacktrace -labsl_debugging_internal -labsl_malloc_internal -labsl_time -labsl_time_zone -labsl_civil_time -labsl_strings -labsl_strings_internal -labsl_throw_delegate -labsl_int128 -labsl_base -labsl_spinlock_wait -labsl_raw_logging_internal -labsl_log_severity -labsl_dynamic_annotations"
   ""
   "grpc_unsecure.pc")
-
-# grpc++ .pc file
-#generate_pkgconfig(
-#  "gRPC++"
-#  "C++ wrapper for gRPC"
-#  "${gRPC_CPP_VERSION}"
-#  "grpc"
-#  "-lgrpc++ -labsl_raw_hash_set -labsl_hashtablez_sampler -labsl_exponential_biased -labsl_hash -labsl_bad_variant_access -labsl_city -labsl_status -labsl_cord -labsl_bad_optional_access -labsl_str_format_internal -labsl_synchronization -labsl_graphcycles_internal -labsl_symbolize -labsl_demangle_internal -labsl_stacktrace -labsl_debugging_internal -labsl_malloc_internal -labsl_time -labsl_time_zone -labsl_civil_time -labsl_strings -labsl_strings_internal -labsl_throw_delegate -labsl_int128 -labsl_base -labsl_spinlock_wait -labsl_raw_logging_internal -labsl_log_severity -labsl_dynamic_annotations"
-#  ""
-#  "grpc++.pc")
 
 # grpc++_unsecure .pc file
 generate_pkgconfig(

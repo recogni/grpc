@@ -488,41 +488,6 @@ if(gRPC_INSTALL)
   )
 endif()
 
-if(gRPC_BUILD_CSHARP_EXT)
-
-add_library(grpc_csharp_ext SHARED
-  src/csharp/ext/grpc_csharp_ext.c
-)
-
-set_target_properties(grpc_csharp_ext PROPERTIES
-  VERSION ${gRPC_CORE_VERSION}
-  SOVERSION ${gRPC_CORE_SOVERSION}
-)
-
-target_include_directories(grpc_csharp_ext
-  PUBLIC $<INSTALL_INTERFACE:${gRPC_INSTALL_INCLUDEDIR}> $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${_gRPC_ADDRESS_SORTING_INCLUDE_DIR}
-    ${_gRPC_RE2_INCLUDE_DIR}
-    ${_gRPC_UPB_GENERATED_DIR}
-    ${_gRPC_UPB_GRPC_GENERATED_DIR}
-    ${_gRPC_UPB_INCLUDE_DIR}
-    ${_gRPC_ZLIB_INCLUDE_DIR}
-)
-target_link_libraries(grpc_csharp_ext
-  ${_gRPC_ALLTARGETS_LIBRARIES}
-  grpc
-  gpr
-  address_sorting
-  upb
-)
-
-
-endif()
-
-
-
 add_library(grpc_unsecure
   src/core/ext/filters/census/grpc_context.cc
   src/core/ext/filters/client_channel/backend_metric.cc

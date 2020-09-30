@@ -119,12 +119,12 @@ else
 fi  
 
 
-# Download toolchain if needed.
-echo "3.0: Downloading riscv cross compilersi if needed"
-$ONE_STEP && echo "Hit Return" && read ans
+# Copy toolchain if needed.
 if [ ! -d ${TMP_TOOLCHAIN}/riscv ]
 then  
-    mkdir -p ${TMP_TOOLCHAIN}
+    echo "3.0: Copying riscv cross compile env"
+    $ONE_STEP && echo "Hit Return" && read ans
+        mkdir -p ${TMP_TOOLCHAIN}
     pushd ${TMP_TOOLCHAIN}
     mkdir riscv
     cp -r ${RISCV_TOOLCHAIN}/* riscv
@@ -133,7 +133,6 @@ else
     pushd ${TMP_TOOLCHAIN}
 fi
 
-#SET(CMAKE_SYSTEM_PROCESSOR riscv64)
 
 #Eventually we may have to add flags... for example (stolen from QNX platform):
 #set(CMAKE_CXX_FLAGS "-Vgcc_ntoaarch64 -O2 -Wc,-Wall -DBUILDENV_qss -g -Os -Wall -march=armv8-a -mcpu=cortex-a57 -mtune=cortex-a57 \
@@ -165,8 +164,7 @@ set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
 EOT
 popd
 
-# This build will use the host architecture copies of protoc and
-# grpc_cpp_plugin that we built earlier.
+# Create the Makefiles that will cross compile for riscv 
 echo "4.0: Create Makefile for Riscv builds"
 $ONE_STEP && echo "Hit Return" && read ans
 mkdir -p "${RISCV_BUILD_AREA}"
@@ -176,16 +174,14 @@ cmake -DCMAKE_TOOLCHAIN_FILE=${TMP_TOOLCHAIN}/toolchain.cmake \
       -DCMAKE_INSTALL_PREFIX=${TMP_TOOLCHAIN}/grpc_install \
       ../..
 
-#This is the heavy ifting....build all needed libraries,
-# executables, etc.
+# Execute makefiles to build all needed libraries, executables, etc.
 echo "5: Build riscv libs and executables"
 $ONE_STEP && echo "Hit Return" && read ans
 make -j4 install
 popd
 
-# Build helloworld example for raspberry pi.
-# As above, it will find and use protoc and grpc_cpp_plugin
-# for the host architecture.
+# Now that libraries, tools, etc are built, go ahead and build
+# the final app.
 echo "6.0: Build riscv version of example app"
 $ONE_STEP && echo "Hit Return" && read ans
 mkdir -p "examples/cpp/helloworld/${RISCV_BUILD_AREA}"

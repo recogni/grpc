@@ -303,9 +303,9 @@ add_custom_target(tools_cxx
 add_custom_target(tools
   DEPENDS tools_c tools_cxx)
 
-protobuf_generate_grpc_cpp(
-  src/proto/grpc/channelz/channelz.proto
-)
+#protobuf_generate_grpc_cpp(
+#  src/proto/grpc/channelz/channelz.proto
+#)
 protobuf_generate_grpc_cpp(
   src/proto/grpc/core/stats.proto
 )
@@ -1404,71 +1404,6 @@ if(gRPC_INSTALL)
     LIBRARY DESTINATION ${gRPC_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${gRPC_INSTALL_LIBDIR}
   )
-endif()
-
-
-# grpcpp_channelz doesn't build with protobuf-lite
-# See https://github.com/grpc/grpc/issues/19473
-if(gRPC_BUILD_CODEGEN AND NOT gRPC_USE_PROTO_LITE)
-add_library(grpcpp_channelz
-  ${_gRPC_PROTO_GENS_DIR}/src/proto/grpc/channelz/channelz.pb.cc
-  ${_gRPC_PROTO_GENS_DIR}/src/proto/grpc/channelz/channelz.grpc.pb.cc
-  ${_gRPC_PROTO_GENS_DIR}/src/proto/grpc/channelz/channelz.pb.h
-  ${_gRPC_PROTO_GENS_DIR}/src/proto/grpc/channelz/channelz.grpc.pb.h
-  src/cpp/server/channelz/channelz_service.cc
-  src/cpp/server/channelz/channelz_service_plugin.cc
-)
-
-set_target_properties(grpcpp_channelz PROPERTIES
-  VERSION ${gRPC_CPP_VERSION}
-  SOVERSION ${gRPC_CPP_SOVERSION}
-)
-
-
-target_include_directories(grpcpp_channelz
-  PUBLIC $<INSTALL_INTERFACE:${gRPC_INSTALL_INCLUDEDIR}> $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${_gRPC_ADDRESS_SORTING_INCLUDE_DIR}
-    ${_gRPC_RE2_INCLUDE_DIR}
-    ${_gRPC_UPB_GENERATED_DIR}
-    ${_gRPC_UPB_GRPC_GENERATED_DIR}
-    ${_gRPC_UPB_INCLUDE_DIR}
-    ${_gRPC_ZLIB_INCLUDE_DIR}
-    ${_gRPC_PROTO_GENS_DIR}
-)
-target_link_libraries(grpcpp_channelz
-  ${_gRPC_PROTOBUF_LIBRARIES}
-  ${_gRPC_ALLTARGETS_LIBRARIES}
-  grpc++_unsecure
-  grpc_unsecure
-  gpr
-  address_sorting
-  upb
-)
-
-foreach(_hdr
-  include/grpcpp/ext/channelz_service_plugin.h
-  include/grpcpp/ext/channelz_service_plugin_impl.h
-)
-  string(REPLACE "include/" "" _path ${_hdr})
-  get_filename_component(_path ${_path} PATH)
-  install(FILES ${_hdr}
-    DESTINATION "${gRPC_INSTALL_INCLUDEDIR}/${_path}"
-  )
-endforeach()
-endif()
-
-if(gRPC_BUILD_CODEGEN)
-
-if(gRPC_INSTALL AND NOT gRPC_USE_PROTO_LITE)
-  install(TARGETS grpcpp_channelz EXPORT gRPCTargets
-    RUNTIME DESTINATION ${gRPC_INSTALL_BINDIR}
-    LIBRARY DESTINATION ${gRPC_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${gRPC_INSTALL_LIBDIR}
-  )
-endif()
-
 endif()
 
 add_library(upb

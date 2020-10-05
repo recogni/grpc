@@ -3,18 +3,33 @@
 #Taken from https://grpc.io/docs/languages/cpp/quickstart/
 #
 
-MY_INSTALL_DIR=/tmp/build_native
+MY_INSTALL_DIR=/tmp/native_build
 BUILD_AREA=cmake/native_build
 
-set -ex
+set -e
 
 mkdir -p $MY_INSTALL_DIR
 export PATH="$MY_INSTALL_DIR/bin:$PATH"
 
-# Clean up prior builds
-rm -rf ${BUILD_AREA}
-sudo rm -rf examples/cpp/helloworld/${BUILD_AREA}
-rm -rf ${MY_INSTALL_DIR}
+case "$1" in
+    clean*)
+        # Clean up prior builds
+        echo "Removing ${BUILD_AREA}"
+        rm -rf ${BUILD_AREA}
+        sudo rm -rf examples/cpp/helloworld/${BUILD_AREA}
+        rm -rf ${MY_INSTALL_DIR}
+        
+        case "$1" in
+            cleanonly)
+                echo "Clean & exit"
+                exit
+                ;;
+        esac
+        ;;
+    *)
+        ;;
+esac
+
 
 # Build libs
 mkdir -p ${BUILD_AREA}

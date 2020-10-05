@@ -180,6 +180,16 @@ $ONE_STEP && echo "Hit Return" && read ans
 make -j4 install
 popd
 
+#
+# Use the Makefile to buld app vs cmake.
+#
+make -f test/distrib/cpp/run_distrib_test_hello.mk
+exit
+
+#
+#Don't use cmake anymore.
+#
+
 # Now that libraries, tools, etc are built, go ahead and build
 # the final app.
 echo "6.0: Build riscv version of example app"

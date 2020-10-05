@@ -2,9 +2,16 @@
 #Run from top level...
 
 #
-# Riscv settings
+#Pick either riscv or x86
 #
 PROC = riscv
+#PROC = x86
+
+#
+# Riscv settings
+#
+ifeq ($(PROC),riscv)
+
 ROOT = /tmp/riscv_root
 ROOT_BIN = $(ROOT)/riscv/bin
 SYSROOT_PATH = $(ROOT)/riscv/sysroot
@@ -15,20 +22,17 @@ G++ = riscv64-unknown-linux-gnu-g++
 PROTOC = /usr/local/bin/protoc
 CROSS_INC_PATH = -isystem $(CROSS_INC)
 
-
+else
 #
 # x86 settings
 #
-#PROC := x86
-#ROOT := /tmp/native_build
-#ROOT_BIN := /usr/bin
-#SYSROOT := 
-#SYSROOT_PATH := 
-#CROSS_LIB := $(ROOT)/lib
-#CROSS_INC := 
-#G++ := c++
-#PROTOC := $(ROOT)/bin/protoc-3.13.0.0
-#X86lib := x86_64-linux-gnu
+ROOT = /tmp/native_build
+ROOT_BIN = /usr/bin
+CROSS_LIB = $(ROOT)/lib
+G++ = c++
+PROTOC = $(ROOT)/bin/protoc-3.13.0.0
+X86lib = x86_64-linux-gnu
+endif
 
 
 TMP_ROOT := /tmp/server_app_$(PROC)
@@ -110,12 +114,4 @@ prep:
 	@cp examples/protos/helloworld.proto $(SRC)
 	@cp examples/cpp/helloworld/greeter_server.cc $(SRC)
 	@cp examples/cpp/helloworld/greeter_async_server.cc $(SRC)
-
-
-#/tmp/native_build/bin/protoc-3.13.0.0 --grpc_out examples/cpp/helloworld/cmake/native_build --cpp_out examples/cpp/helloworld/cmake/native_build -I examples/protos --plugin=protoc-gen-grpc="/tmp/native_build/bin/grpc_cpp_plugin" examples/protos/helloworld.proto
-#/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/greeter_server.dir/greeter_server.cc.o -c /home/brett/grpc_sept29_3/grpc/examples/cpp/helloworld/greeter_server.cc
-#/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/greeter_server.dir/helloworld.pb.cc.o -c /home/brett/grpc_sept29_3/grpc/examples/cpp/helloworld/cmake/native_build/helloworld.pb.cc
-#/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/greeter_server.dir/helloworld.grpc.pb.cc.o -c /home/brett/grpc_sept29_3/grpc/examples/cpp/helloworld/cmake/native_build/helloworld.grpc.pb.cc
-
-
 

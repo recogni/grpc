@@ -79,8 +79,6 @@ $(CROSS_LIB)/libabsl_log_severity.a  \
 $(CROSS_LIB)/libabsl_spinlock_wait.a  \
 $(CROSS_LIB)/libaddress_sorting.a  \
 $(CROSS_LIB)/libupb.a \
-$(SYSROOT_PATH)/usr/lib/$(X86lib)/librt.so  \
--lrt  \
 -lpthread
 
 

@@ -147,6 +147,9 @@ fi
 #        -Wl,-L$ENV{TOOLCHAIN_PATH}/aarch64le/lib \
 #        -Wl,-L$ENV{TOOLCHAIN_PATH}/aarch64le/usr/lib")
 
+# unknown-linux-gnu  works for linux but we'll prob need unknown-elf for FreeRTOS.
+# unknown-elf fails when abseil is unable to find Threads package (prob just cuz its
+# the first to look for it)..
 echo "set(devel_root ${TMP_TOOLCHAIN})" > toolchain.cmake
 cat >> toolchain.cmake <<'EOT'
 SET(CMAKE_SYSTEM_NAME Linux)

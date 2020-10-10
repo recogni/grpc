@@ -1,11 +1,11 @@
 # Building grpc with FreeRTOS
 
 #  1. Checkout grpc tree and build grpc libs
-Prereqs:
-    sudo apt install -y cmake
-    sudo apt install -y build-essential autoconf libtool pkg-config
 
-Clone and build:
+The run_distrib_test_riscv.sh script below will install cmake for you if needed but
+some other pre-reqs may still be missing....
+
+# Clone and build grpc tools and cross compile:
     git clone -b recogni https://github.com/recogni/grpc
     cd grpc
     git submodule update --init
@@ -16,9 +16,9 @@ Clone and build:
 
 
 # 2. Checkout and build Scorpio
-  git clone -b brett/dev/grpc_play --recursive git@github.com:recogni/scorpio-fw
-  cd scorpio-fw
-  make setup
-  cd src/scpu
-  make clean;make
+    git clone -b brett/dev/grpc_play --recursive git@github.com:recogni/scorpio-fw
+    cd scorpio-fw
+    make setup
+    cd src/scpu
+    make clean;make
 

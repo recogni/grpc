@@ -10,7 +10,7 @@ some other pre-reqs may still be missing....
     cd grpc
     git submodule update --init
     Edit test/distrib/cpp/run_distrib_test_riscv.sh
-      set RISCV_TOOLCHAIN=your_toolchain_location_
+      set RISCV_TOOLCHAIN=your_riscv_crosscompile_toolchain_location_
 
     test/distrib/cpp/run_distrib_test_riscv.sh clean
 

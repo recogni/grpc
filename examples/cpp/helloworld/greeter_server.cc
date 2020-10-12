@@ -53,7 +53,11 @@ void RunServer() {
   GreeterServiceImpl service;
 
   grpc::EnableDefaultHealthCheckService(true);
+#ifdef REFLECTOR
+  //   We have moved to protobuf-lite which doesn't support the reflector, so
+  //   libreflection should be unused/unneeded.
   grpc::reflection::InitProtoReflectionServerBuilderPlugin();
+#endif
   ServerBuilder builder;
   // Listen on the given address without any authentication mechanism.
   builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());

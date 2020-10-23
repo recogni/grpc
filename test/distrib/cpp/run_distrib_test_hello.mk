@@ -7,6 +7,7 @@
 PROC = riscv
 #PROC = x86
 
+LIB = newlib
 #
 # Riscv settings
 #
@@ -14,11 +15,23 @@ ifeq ($(PROC),riscv)
 
 ROOT = /tmp/riscv_root
 ROOT_BIN = $(ROOT)/riscv/bin
+
+ifeq ($(LIB),newlib)
+SYSROOT_PATH = $(ROOT)/riscv/riscv64-unknown-elf
+SYSROOT = --sysroot=$(SYSROOT_PATH)
+CROSS_LIB = $(ROOT)/stage/lib
+CROSS_INC = $(ROOT)/stage/include
+G++ = riscv64-unknown-elf-g++
+
+else
+
 SYSROOT_PATH = $(ROOT)/riscv/sysroot
 SYSROOT = --sysroot=$(SYSROOT_PATH)
 CROSS_LIB = $(ROOT)/stage/lib
 CROSS_INC = $(ROOT)/stage/include
 G++ = riscv64-unknown-linux-gnu-g++
+endif
+
 PROTOC = /usr/local/bin/protoc
 CROSS_INC_PATH = -isystem $(CROSS_INC)
 

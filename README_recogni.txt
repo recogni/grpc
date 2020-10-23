@@ -11,6 +11,7 @@ some other pre-reqs may still be missing....
     cd grpc
     Edit test/distrib/cpp/run_distrib_test_riscv.sh
       set RISCV_TOOLCHAIN=your_riscv_crosscompile_toolchain_location_
+      set SCORPIO_TREE to your scorpio build tree
 
     test/distrib/cpp/run_distrib_test_riscv.sh clean
 

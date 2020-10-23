@@ -20,6 +20,12 @@
 #
 RISCV_TOOLCHAIN=/opt/scorpio-fw-gcc/
 
+#
+#Point to the scorpio-fw directory of your scorpio tree
+#(where you have built scorpio libraries).
+#
+SCORPIO_TREE=/home/brett/scorp_oct19_libs/scorpio-fw
+
 #Ask user to hit return at each major step,
 ONE_STEP=false   # set to true or false
 
@@ -55,6 +61,9 @@ case "$1" in
         echo "Leave $TMP_TOOLCHAIN in place"
         ;;
 esac
+
+rm -f cmake/riscv_build/CMakeFiles/CMakeOutput.log
+rm -f cmake/riscv_build/CMakeFiles/CMakeError.log
 
 # Verify toolchain
 
@@ -128,11 +137,20 @@ then
     pushd ${TMP_TOOLCHAIN}
     mkdir riscv
     cp -r ${RISCV_TOOLCHAIN}/* riscv
+
+    #echo Renaming sysroot, hit return
+    #read ans
+    #mv riscv/sysroot riscv/sysroot.blah
 else
     #echo "RISCV cross compilers up to date"
     pushd ${TMP_TOOLCHAIN}
 fi
 
+if [ -f ${TMP_TOOLCHAIN}/riscv/riscv64-unknown-elf/include/pthread.h ]
+then
+   echo "Renaming pthread.h"
+   mv ${TMP_TOOLCHAIN}/riscv/riscv64-unknown-elf/include/pthread.h ${TMP_TOOLCHAIN}/riscv/riscv64-unknown-elf/include/pthread.h.test
+fi
 
 #Eventually we may have to add flags... for example (stolen from QNX platform):
 #set(CMAKE_CXX_FLAGS "-Vgcc_ntoaarch64 -O2 -Wc,-Wall -DBUILDENV_qss -g -Os -Wall -march=armv8-a -mcpu=cortex-a57 -mtune=cortex-a57 \
@@ -147,34 +165,51 @@ fi
 #        -Wl,-L$ENV{TOOLCHAIN_PATH}/aarch64le/lib \
 #        -Wl,-L$ENV{TOOLCHAIN_PATH}/aarch64le/usr/lib")
 
+# Currently in ${TMP_TOOLCHAIN}
+
 # unknown-linux-gnu  works for linux but we'll prob need unknown-elf for FreeRTOS.
 # unknown-elf fails when abseil is unable to find Threads package (prob just cuz its
 # the first to look for it)..
 echo "set(devel_root ${TMP_TOOLCHAIN})" > toolchain.cmake
+echo "set(CMAKE_C_FLAGS \"-I${SCORPIO_TREE}/modules/Lab-Project-FreeRTOS-POSIX/include/FreeRTOS_POSIX \
+   -I${SCORPIO_TREE}/modules/Lab-Project-FreeRTOS-POSIX/include \
+   -I${SCORPIO_TREE}/modules/Lab-Project-FreeRTOS-POSIX/FreeRTOS-Plus-POSIX/include \
+   -I${SCORPIO_TREE}/modules/Lab-Project-FreeRTOS-POSIX/include/private \
+   -T ${SCORPIO_TREE}/src/scpu/main/link.ld -nostartfiles -static -nostdlib \
+   ${SCORPIO_TREE}/src/scpu/main/boot.o \
+   ${SCORPIO_TREE}/src/scpu/rtos/playground.o \
+   -Wl,-L ${SCORPIO_TREE}/src/scpu \
+   -llfs -lscpu -llfs -lscpu -lpthreads -lc -lgcc -lscpu \
+   \")" >> toolchain.cmake
+
 cat >> toolchain.cmake <<'EOT'
-SET(CMAKE_SYSTEM_NAME Linux)
+SET(CMAKE_SYSTEM_NAME Generic)
 SET(CMAKE_SYSTEM_PROCESSOR riscv64)
 set(CMAKE_STAGING_PREFIX ${devel_root}/stage)
 set(tool_root ${devel_root}/riscv)
-set(CMAKE_SYSROOT ${tool_root}/sysroot)
-set(CMAKE_C_COMPILER ${tool_root}/bin/riscv64-unknown-linux-gnu-gcc)
-set(CMAKE_CXX_COMPILER ${tool_root}/bin/riscv64-unknown-linux-gnu-g++)
+#set(CMAKE_SYSROOT ${tool_root}/sysroot)
+set(CMAKE_SYSROOT ${tool_root}/riscv64-unknown-elf)
+set(CMAKE_C_COMPILER ${tool_root}/bin/riscv64-unknown-elf-gcc)
+set(CMAKE_CXX_COMPILER ${tool_root}/bin/riscv64-unknown-elf-g++)
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
-
+set(CMAKE_PREFIX_PATH /tmp/brett_root/)
 EOT
 popd
 
 # Create the Makefiles that will cross compile for riscv 
-echo "4.0: Create Makefile for Riscv builds"
+echo "4.0: Create Makefile for Riscv builds in ${RISCV_BUILD_AREA}"
 $ONE_STEP && echo "Hit Return" && read ans
 mkdir -p "${RISCV_BUILD_AREA}"
 pushd "${RISCV_BUILD_AREA}"
+
 cmake -DCMAKE_TOOLCHAIN_FILE=${TMP_TOOLCHAIN}/toolchain.cmake \
       -DCMAKE_BUILD_TYPE=Release \
       -DCMAKE_INSTALL_PREFIX=${TMP_TOOLCHAIN}/grpc_install \
+      -DBUILD_SHARED_LIBS=OFF \
+      -DCMAKE_PREFIX_PATH=/tmp/brett_root \
       ../..
 
 # Execute makefiles to build all needed libraries, executables, etc.

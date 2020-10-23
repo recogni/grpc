@@ -31,7 +31,8 @@ some other pre-reqs may still be missing....
     # system calls will be unresolved.
 
     cd src/scpu
-    make clean;make
+    make clean
+    make libs
 
     #However, to successfully build a riscv *Linux* version of grpc server,
     # you can do this:

@@ -180,7 +180,7 @@ echo "set(CMAKE_C_FLAGS \"-I${SCORPIO_TREE}/modules/Lab-Project-FreeRTOS-POSIX/i
    ${SCORPIO_TREE}/src/scpu/rtos/playground.o \
    -Wl,-L ${SCORPIO_TREE}/src/scpu \
    -llfs -lscpu -llfs -lscpu -lpthreads -lc -lgcc -lscpu \
-   ${TMP_TOOLCHAIN}/riscv/riscv64-unknown-elf/lib/libc.a
+   ${TMP_TOOLCHAIN}/riscv/riscv64-unknown-elf/lib/libc.a \
    \")" >> toolchain.cmake
 
 cat >> toolchain.cmake <<'EOT'

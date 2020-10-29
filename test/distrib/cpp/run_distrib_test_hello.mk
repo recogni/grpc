@@ -1,5 +1,6 @@
 #From examples/cpp/helloworld/cmake/riscv_build/CMakeFiles/greeter_server.dir/build.make
-#Run from top level...
+#Run from  grpc directory. Must provide which kind of c library to use, newlib or linux
+# make -f test/distrib/cpp/run_distrib_test_hello.mk LIB=newlib | linux
 
 #
 #Pick either riscv or x86
@@ -7,7 +8,6 @@
 PROC = riscv
 #PROC = x86
 
-LIB = newlib
 #
 # Riscv settings
 #

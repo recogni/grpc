@@ -39,28 +39,45 @@ TMP_TOOLCHAIN=/tmp/riscv_root             # x86 based crosscompile toolchain,
 set -e
 
 # Add options here
-case "$1" in
-    clean*)
-        # Keyword 'clean' removes (causing a rebuild) of the 
-        # host arch build tools, libs etc.
+while [[ $# -gt 0 ]]
+do
+    case "$1" in
+        clean*)
+            # Keyword 'clean' removes (causing a rebuild) of the 
+            # host arch build tools, libs etc.
 
-        echo "Cleaning $TMP_TOOLCHAIN and ${RISCV_BUILD_AREA}"
-        rm -rf $TMP_TOOLCHAIN
-        rm -rf ${RISCV_BUILD_AREA}/
-        sudo rm -rf ${HOST_BUILD_AREA}/
-        rm -rf examples/cpp/helloworld/${RISCV_BUILD_AREA}
-        case "$1" in
-            cleanonly)
+            echo "Cleaning $TMP_TOOLCHAIN and ${RISCV_BUILD_AREA}"
+            rm -rf $TMP_TOOLCHAIN
+            rm -rf ${RISCV_BUILD_AREA}/
+            sudo rm -rf ${HOST_BUILD_AREA}/
+            rm -rf examples/cpp/helloworld/${RISCV_BUILD_AREA}
+            if [ "$1" = "cleanonly" ]; then
                 echo "Clean & exit"
                 exit
-                ;;
-        esac
+            fi
+            shift
+            ;;
+        linux)
+            BUILD_TYPE=linux
+            shift
+            ;;
+        newlib)
+            BUILD_TYPE=newlib
+            shift
+            ;;
+        *)
+            #echo "Leave $TMP_TOOLCHAIN in place"
+            shift
+            ;;
+    esac
+done
 
-        ;;
-    *)
-        echo "Leave $TMP_TOOLCHAIN in place"
-        ;;
-esac
+if [ -z $BUILD_TYPE ];then
+    echo Must pick a build type, either newlib or linux
+    exit
+fi
+
+echo build_riscv.sh build type is $BUILD_TYPE
 
 rm -f cmake/riscv_build/CMakeFiles/CMakeOutput.log
 rm -f cmake/riscv_build/CMakeFiles/CMakeError.log
@@ -137,19 +154,19 @@ then
     pushd ${TMP_TOOLCHAIN}
     mkdir riscv
     cp -r ${RISCV_TOOLCHAIN}/* riscv
-
-    #echo Renaming sysroot, hit return
-    #read ans
-    #mv riscv/sysroot riscv/sysroot.blah
 else
     #echo "RISCV cross compilers up to date"
     pushd ${TMP_TOOLCHAIN}
 fi
 
-if [ -f ${TMP_TOOLCHAIN}/riscv/riscv64-unknown-elf/include/pthread.h ]
+# Guarantee we definetly aren't using libc pthread
+if [ "$BUILD_TYPE" = "newlib" ]
 then
-   echo "Renaming pthread.h"
-   mv ${TMP_TOOLCHAIN}/riscv/riscv64-unknown-elf/include/pthread.h ${TMP_TOOLCHAIN}/riscv/riscv64-unknown-elf/include/pthread.h.test
+    if [ -f ${TMP_TOOLCHAIN}/riscv/riscv64-unknown-elf/include/pthread.h ]
+    then
+       echo "Renaming pthread.h"
+       mv ${TMP_TOOLCHAIN}/riscv/riscv64-unknown-elf/include/pthread.h ${TMP_TOOLCHAIN}/riscv/riscv64-unknown-elf/include/pthread.h.test
+    fi
 fi
 
 #Eventually we may have to add flags... for example (stolen from QNX platform):
@@ -166,6 +183,27 @@ fi
 #        -Wl,-L$ENV{TOOLCHAIN_PATH}/aarch64le/usr/lib")
 
 # Currently in ${TMP_TOOLCHAIN}
+
+if [ "$BUILD_TYPE" = "linux" ]
+then
+
+echo "set(devel_root ${TMP_TOOLCHAIN})" > toolchain.cmake
+cat >> toolchain.cmake <<'EOT'
+SET(CMAKE_SYSTEM_NAME Linux)
+SET(CMAKE_SYSTEM_PROCESSOR riscv64)
+set(CMAKE_STAGING_PREFIX ${devel_root}/stage)
+set(tool_root ${devel_root}/riscv)
+set(CMAKE_SYSROOT ${tool_root}/sysroot)
+set(CMAKE_C_COMPILER ${tool_root}/bin/riscv64-unknown-linux-gnu-gcc)
+set(CMAKE_CXX_COMPILER ${tool_root}/bin/riscv64-unknown-linux-gnu-g++)
+
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
+EOT
+
+else  # not 'linux", must be "newlib"
 
 # unknown-linux-gnu  works for linux but we'll prob need unknown-elf for FreeRTOS.
 # unknown-elf fails when abseil is unable to find Threads package (prob just cuz its
@@ -196,8 +234,10 @@ set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
-set(CMAKE_PREFIX_PATH /tmp/brett_root/)
 EOT
+
+fi  # BUILD_TYPE
+
 popd
 
 # Create the Makefiles that will cross compile for riscv 
@@ -210,7 +250,6 @@ cmake -DCMAKE_TOOLCHAIN_FILE=${TMP_TOOLCHAIN}/toolchain.cmake \
       -DCMAKE_BUILD_TYPE=Release \
       -DCMAKE_INSTALL_PREFIX=${TMP_TOOLCHAIN}/grpc_install \
       -DBUILD_SHARED_LIBS=OFF \
-      -DCMAKE_PREFIX_PATH=/tmp/brett_root \
       ../..
 
 # Execute makefiles to build all needed libraries, executables, etc.
@@ -222,7 +261,7 @@ popd
 #
 # Use the Makefile to buld app vs cmake.
 #
-make -f test/distrib/cpp/run_distrib_test_hello.mk
+make -f test/distrib/cpp/run_distrib_test_hello.mk LIB=$BUILD_TYPE
 exit
 
 #

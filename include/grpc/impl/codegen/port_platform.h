@@ -396,6 +396,30 @@
 #define GPR_POSIX_TIME 1
 #define GPR_HAS_PTHREAD_H 1
 #define GPR_GETPID_IN_UNISTD_H 1
+
+
+#elif defined(SCORPIO)
+#include "FreeRTOS_POSIX.h"
+
+#undef GPR_GCC_TLS
+#undef GPR_POSIX_LOG
+#undef GPR_POSIX_ENV
+#undef GPR_POSIX_TMPFILE
+#undef GPR_POSIX_STRING
+#undef GPR_POSIX_SUBPROCESS
+#undef GPR_POSIX_TIME
+#undef GPR_GETPID_IN_UNISTD_H
+#undef GPR_ABSEIL_SYNC
+#define GPR_PLATFORM_STRING "scorpio"
+#define GPR_CPU_POSIX 1
+#define GPR_GCC_ATOMIC 1
+#define GPR_POSIX_SYNC 1
+#define GPR_HAS_PTHREAD_H 1
+#define GPR_ARCH_64 1
+#define GRPC_POSIX_SOCKETUTILS 1
+#define GPR_PTHREAD_TLS 1
+
+
 #else
 #error "Could not auto-detect platform"
 #endif

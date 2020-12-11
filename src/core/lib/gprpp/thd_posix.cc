@@ -37,6 +37,10 @@
 #include "src/core/lib/gprpp/fork.h"
 #include "src/core/lib/gprpp/memory.h"
 
+#ifdef SCORPIO
+#include "hal_os.h"
+#endif
+
 namespace grpc_core {
 namespace {
 class ThreadInternalsPosix;

@@ -31,12 +31,20 @@
 
 #include "src/core/lib/gpr/useful.h"
 
+#ifdef SCORPIO
+#include "hal_os.h"
+#endif
+
 static long ncpus = 0;
 
 static pthread_key_t thread_id_key;
 
 static void init_ncpus() {
+#ifdef SCORPIO
+  ncpus = 1;
+#else
   ncpus = sysconf(_SC_NPROCESSORS_CONF);
+#endif
   if (ncpus < 1 || ncpus > INT32_MAX) {
     gpr_log(GPR_ERROR, "Cannot determine number of CPUs: assuming 1");
     ncpus = 1;

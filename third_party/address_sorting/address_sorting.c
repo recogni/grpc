@@ -48,8 +48,10 @@
 #include <sys/types.h>
 
 // Scope values increase with increase in scope.
+#ifndef SCORPIO
 static const int kIPv6AddrScopeLinkLocal = 1;
 static const int kIPv6AddrScopeSiteLocal = 2;
+#endif
 static const int kIPv6AddrScopeGlobal = 3;
 
 static address_sorting_source_addr_factory* g_current_source_addr_factory =
@@ -66,6 +68,7 @@ bool address_sorting_get_source_addr_for_testing(
   return address_sorting_get_source_addr(dest, source);
 }
 
+#ifndef SCORPIO
 static int ipv6_prefix_match_length(const struct sockaddr_in6* sa,
                                     const struct sockaddr_in6* sb) {
   unsigned char* a = (unsigned char*)&sa->sin6_addr;
@@ -83,7 +86,15 @@ static int ipv6_prefix_match_length(const struct sockaddr_in6* sa,
   }
   return cur_bit;
 }
+#else
+static int ipv6_prefix_match_length(void* sa, void* sb)
+{
+  return 5;
+}
+#endif //SCORPIO
 
+
+#ifndef SCORPIO
 static int in6_is_addr_loopback(const struct in6_addr* ipv6_address) {
   uint32_t* bits32 = (uint32_t*)ipv6_address;
   return bits32[0] == 0 && bits32[1] == 0 && bits32[2] == 0 &&
@@ -131,6 +142,7 @@ static int in6_is_addr_6bone(const struct in6_addr* ipv6_address) {
   uint8_t* bytes = (uint8_t*)ipv6_address;
   return bytes[0] == 0x3f && bytes[1] == 0xfe;
 }
+#endif // SCORPIO
 
 address_sorting_family address_sorting_abstract_get_family(
     const address_sorting_address* address) {
@@ -152,6 +164,7 @@ static int get_label_value(const address_sorting_address* resolved_addr) {
              ADDRESS_SORTING_AF_INET6) {
     return 1;
   }
+#ifndef SCORPIO
   struct sockaddr_in6* ipv6_addr = (struct sockaddr_in6*)&resolved_addr->addr;
   if (in6_is_addr_loopback(&ipv6_addr->sin6_addr)) {
     return 0;
@@ -170,6 +183,7 @@ static int get_label_value(const address_sorting_address* resolved_addr) {
   } else if (in6_is_addr_6bone(&ipv6_addr->sin6_addr)) {
     return 12;
   }
+#endif //SCORPIO
   return 1;
 }
 
@@ -181,6 +195,7 @@ static int get_precedence_value(const address_sorting_address* resolved_addr) {
              ADDRESS_SORTING_AF_INET6) {
     return 1;
   }
+#ifndef SCORPIO
   struct sockaddr_in6* ipv6_addr = (struct sockaddr_in6*)&resolved_addr->addr;
   if (in6_is_addr_loopback(&ipv6_addr->sin6_addr)) {
     return 50;
@@ -197,6 +212,7 @@ static int get_precedence_value(const address_sorting_address* resolved_addr) {
              in6_is_addr_6bone(&ipv6_addr->sin6_addr)) {
     return 1;
   }
+#endif //SCORPIO
   return 40;
 }
 
@@ -204,7 +220,9 @@ static int sockaddr_get_scope(const address_sorting_address* resolved_addr) {
   if (address_sorting_abstract_get_family(resolved_addr) ==
       ADDRESS_SORTING_AF_INET) {
     return kIPv6AddrScopeGlobal;
-  } else if (address_sorting_abstract_get_family(resolved_addr) ==
+  } 
+#ifndef SCORPIO
+  else if (address_sorting_abstract_get_family(resolved_addr) ==
              ADDRESS_SORTING_AF_INET6) {
     struct sockaddr_in6* ipv6_addr = (struct sockaddr_in6*)&resolved_addr->addr;
     if (in6_is_addr_loopback(&ipv6_addr->sin6_addr) ||
@@ -216,6 +234,7 @@ static int sockaddr_get_scope(const address_sorting_address* resolved_addr) {
     }
     return kIPv6AddrScopeGlobal;
   }
+#endif //SCORPIO
   return 0;
 }
 

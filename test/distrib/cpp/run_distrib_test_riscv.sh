@@ -24,7 +24,7 @@ RISCV_TOOLCHAIN=/opt/scorpio-fw-gcc/
 #Point to the scorpio-fw directory of your scorpio tree
 #(where you have built scorpio libraries).
 #
-SCORPIO_TREE=/home/brett/scorp_oct19_libs/scorpio-fw
+SCORPIO_TREE=/home/brett/scorp_dec22_libs/scorpio-fw
 
 #Ask user to hit return at each major step,
 ONE_STEP=false   # set to true or false
@@ -39,6 +39,8 @@ SKIP_CMAKE=true
 
 # Bail on errors
 set -e
+
+echo "Using Scorpio tree location: ${SCORPIO_TREE}"
 
 # Add options here
 while [[ $# -gt 0 ]]
@@ -375,6 +377,7 @@ then
 MAKELIST="\
     third_party/re2                                 re2.make
     third_party/zlib                                zlib.make
+    third_party/protobuf/src/google/protobuf        protobuf.make
     third_party/address_sorting                     address_sorting.make
     third_party/cares/cares                         cares.make
     third_party/abseil-cpp/absl/base                absl_base.make
@@ -404,7 +407,7 @@ MAKELIST="\
     third_party/abseil-cpp/absl/time/internal/cctz   absl_civil_time.make
     third_party/abseil-cpp/absl/time                 absl_time.make
     third_party/abseil-cpp/absl/time/internal/cctz   absl_time_zone.make
-    /home/brett/grpc_oct15/grpc                      gpr.make"
+    ../grpc                      gpr.make"
 
     # Need to revisit these that don't build
 NO_BUILD="\

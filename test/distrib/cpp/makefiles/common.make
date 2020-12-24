@@ -1,7 +1,7 @@
 PROC = riscv
 
 ifeq ($(PROC),riscv)
-SCORPIO_DEFINES := -DSCORPIO 
+SCORPIO_DEFINES := -DSCORPIO  -DGRPC_COMPAT -DHAVE_PTHREAD
 ROOT := /tmp/riscv_root
 BIN := $(ROOT)/riscv/bin
 else
@@ -19,10 +19,11 @@ ARFLAGS=rsc
 CROSS_LIB = $(ROOT)/stage/lib
 CROSS_OBJ = $(ROOT)/stage/obj
 
-SCORPIO := /home/brett/scorp_oct19_libs/scorpio-fw
-GRPC_ROOT := /home/brett/grpc_oct15/grpc/
+SCORPIO := /home/brett/scorp_dec22_libs/scorpio-fw
 
-
+# Top of GRPC tree
+MAKE_DIR := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
+GRPC_ROOT := $(subst test/distrib/cpp/makefiles,, $(MAKE_DIR))
 
 SCORPIO_INCLUDES := \
 -I$(SCORPIO)/modules/FreeRTOS-Kernel/include \

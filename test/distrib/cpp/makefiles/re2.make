@@ -42,8 +42,8 @@ OFILES=\
 
 $(OBJDIR)/%.o: %.cc 
 	@mkdir -p $$(dirname $@)
-	@echo "Building RE2 $@"
-	@$(CXX) -c -o $@ $(CPPFLAGS) $(RE2_CXXFLAGS) $(CXXFLAGS) -DNDEBUG $*.cc
+	@echo "Building re2 $@"
+	@$(CXX) -c -o $@ $(CPPFLAGS) $(RE2_CXXFLAGS) $(CXXFLAGS) $(SCORPIO_INCLUDES) -DNDEBUG $*.cc
 
 $(LIBDIR)/libre2.a: $(OFILES)
 	@mkdir -p $$(dirname $@)
